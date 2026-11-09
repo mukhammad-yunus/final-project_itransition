@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Notebook",
+    "displayName": "NB_01_Bronze_Validation",
+    "description": "This notebook sets the validation rules for each data"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "39923874-541f-963f-4141-3c916d16e56c"
+  }
+}
