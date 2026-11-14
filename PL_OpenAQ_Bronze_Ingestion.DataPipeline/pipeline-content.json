@@ -1,0 +1,78 @@
+{
+  "properties": {
+    "activities": [
+      {
+        "type": "Copy",
+        "typeProperties": {
+          "source": {
+            "type": "RestSource",
+            "requestMethod": "GET",
+            "additionalHeaders": {
+              "X-API-Key": "5d99099f02ef9888e3e992d95ce10ccac98fd35821424343d8cf5be4fc91fa6e"
+            },
+            "paginationRules": {
+              "supportRFC5988": "true"
+            },
+            "httpRequestTimeout": "00:01:40",
+            "requestInterval": "00.00:00:00.010",
+            "datasetSettings": {
+              "type": "RestResource",
+              "typeProperties": {
+                "relativeUrl": "v3/locations?bbox=-74.2591,40.4774,-73.7004,40.9176&limit=1000&page=1"
+              },
+              "schema": [],
+              "externalReferences": {
+                "connection": "d0d02209-8f89-4641-9a9c-d8cc07303607"
+              },
+              "annotations": []
+            }
+          },
+          "sink": {
+            "type": "JsonSink",
+            "formatSettings": {
+              "type": "JsonWriteSettings"
+            },
+            "storeSettings": {
+              "type": "LakehouseWriteSettings"
+            },
+            "datasetSettings": {
+              "type": "Json",
+              "typeProperties": {
+                "location": {
+                  "type": "LakehouseLocation",
+                  "folderPath": "Bronze/OpenAQ",
+                  "fileName": "NYC_locations.json"
+                }
+              },
+              "schema": {},
+              "linkedService": {
+                "name": "NYC_Mobility_Analytics_LH",
+                "properties": {
+                  "type": "Lakehouse",
+                  "typeProperties": {
+                    "artifactId": "8b3e00d7-f4aa-a4b9-4320-3834223727be",
+                    "workspaceId": "00000000-0000-0000-0000-000000000000",
+                    "rootFolder": "Files"
+                  },
+                  "annotations": []
+                }
+              },
+              "annotations": []
+            }
+          },
+          "enableStaging": false
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Copy_OpenAQ_Locations",
+        "description": "This activity copies all information on NYC locations from OpenAQ API",
+        "dependsOn": []
+      }
+    ]
+  }
+}
