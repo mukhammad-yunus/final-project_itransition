@@ -7,9 +7,6 @@
           "source": {
             "type": "RestSource",
             "requestMethod": "GET",
-            "additionalHeaders": {
-              "X-API-Key": "5d99099f02ef9888e3e992d95ce10ccac98fd35821424343d8cf5be4fc91fa6e"
-            },
             "paginationRules": {
               "supportRFC5988": "true"
             },
@@ -33,7 +30,7 @@
               "type": "JsonWriteSettings"
             },
             "storeSettings": {
-              "type": "LakehouseWriteSettings"
+              "type": "AzureBlobStorageWriteSettings"
             },
             "datasetSettings": {
               "type": "Json",
