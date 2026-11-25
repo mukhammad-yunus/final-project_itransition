@@ -1,0 +1,97 @@
+{
+  "properties": {
+    "activities": [
+      {
+        "type": "WebActivity",
+        "typeProperties": {
+          "method": "GET",
+          "relativeUrl": "/secrets/openAQ?api-version=7.4",
+          "headers": {}
+        },
+        "externalReferences": {
+          "connection": "31857acf-70d1-4572-82b6-0e140fda8215"
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": true
+        },
+        "name": "Get_OpenAQ_Secret",
+        "description": "Retrieve the OpenAQ API secret from Azure Key Vault using the workspace identity.",
+        "dependsOn": []
+      },
+      {
+        "type": "RefreshDataflow",
+        "typeProperties": {
+          "dataflowId": "7f9f58ef-8aca-a4e9-4a69-e4457022b847",
+          "workspaceId": "00000000-0000-0000-0000-000000000000",
+          "notifyOption": "NoNotification",
+          "dataflowType": "DataflowFabric",
+          "parameters": {
+            "ApiKey": {
+              "value": {
+                "value": "@activity('Get_OpenAQ_Secret').output.value",
+                "type": "Expression"
+              },
+              "type": "String"
+            }
+          },
+          "executeMashupQueriesOnly": true
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": true,
+          "secureOutput": false
+        },
+        "name": "Run_OpenAQ_Locations_Bronze_Ingestion",
+        "dependsOn": [
+          {
+            "activity": "Get_OpenAQ_Secret",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "RefreshDataflow",
+        "typeProperties": {
+          "dataflowId": "b3ce6fb3-a420-97ce-42c4-77fe53ca0456",
+          "workspaceId": "00000000-0000-0000-0000-000000000000",
+          "notifyOption": "NoNotification",
+          "dataflowType": "DataflowFabric",
+          "parameters": {
+            "ApiKey": {
+              "value": {
+                "value": "@activity('Get_OpenAQ_Secret').output.value",
+                "type": "Expression"
+              },
+              "type": "String"
+            }
+          },
+          "executeMashupQueriesOnly": true
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": true,
+          "secureOutput": false
+        },
+        "name": "Run_DF_OpenAQ_Measurements_Bronze_Ingestion",
+        "dependsOn": [
+          {
+            "activity": "Run_OpenAQ_Locations_Bronze_Ingestion",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

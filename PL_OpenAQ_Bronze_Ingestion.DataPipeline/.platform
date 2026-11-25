@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "DataPipeline",
+    "displayName": "PL_OpenAQ_Bronze_Ingestion"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "d4d086a5-7af4-8b2c-48fc-dd21c60a5861"
+  }
+}
