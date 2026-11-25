@@ -1,0 +1,45 @@
+{
+  "formatVersion": "202502",
+  "computeEngineSettings": {
+    "allowModernEvaluationEngine": true
+  },
+  "name": "DF_OpenAQ_Measurements_Bronze_Ingestion",
+  "queryGroups": [],
+  "documentLocale": "en-US",
+  "queriesMetadata": {
+    "ApiKey": {
+      "queryId": "8e176a3b-a831-4456-b2a3-82c17288ae25",
+      "queryName": "ApiKey",
+      "loadEnabled": false
+    },
+    "Bronze_OpenAQ_Measurements": {
+      "queryId": "e9925caf-ce58-4848-9953-0ab87446e569",
+      "queryName": "Bronze_OpenAQ_Measurements",
+      "loadEnabled": false
+    },
+    "Bronze_OpenAQ_Measurements_DataDestination": {
+      "queryId": "62dbd99d-8f0b-4e62-9d5e-bd80ec894fcf",
+      "queryName": "Bronze_OpenAQ_Measurements_DataDestination",
+      "isHidden": true,
+      "loadEnabled": false
+    },
+    "Locations_Source": {
+      "queryId": "7a8b1342-175a-4478-a152-0a76ff4950bd",
+      "queryName": "Locations_Source"
+    }
+  },
+  "connections": [
+    {
+      "path": "Lakehouse",
+      "kind": "Lakehouse",
+      "connectionId": "{\"ClusterId\":\"fbce11b3-4891-4a51-80f4-c260ade1b3a8\",\"DatasourceId\":\"d2f289b3-8237-4ef7-a196-8c6d2661cad5\"}"
+    },
+    {
+      "path": "https://api.openaq.org/",
+      "kind": "Web",
+      "connectionId": "{\"ClusterId\":\"fbce11b3-4891-4a51-80f4-c260ade1b3a8\",\"DatasourceId\":\"c4e79cdf-b2b3-42fd-8c82-759cd5218ea5\"}"
+    }
+  ],
+  "fastCombine": true,
+  "parametric": true
+}
