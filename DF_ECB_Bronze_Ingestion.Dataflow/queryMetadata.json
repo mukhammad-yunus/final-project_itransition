@@ -1,0 +1,34 @@
+{
+  "formatVersion": "202502",
+  "computeEngineSettings": {
+    "allowModernEvaluationEngine": true
+  },
+  "name": "DF_ECB_Bronze_Ingestion",
+  "queryGroups": [],
+  "documentLocale": "en-US",
+  "queriesMetadata": {
+    "Get_CSV": {
+      "queryId": "c2b3a1bb-441d-41b3-845f-ca0678bf6ca5",
+      "queryName": "Get_CSV",
+      "loadEnabled": false
+    },
+    "Get_CSV_DataDestination": {
+      "queryId": "506a606f-fc24-4588-863c-6ad416b0a165",
+      "queryName": "Get_CSV_DataDestination",
+      "isHidden": true,
+      "loadEnabled": false
+    }
+  },
+  "connections": [
+    {
+      "path": "https://data-api.ecb.europa.eu/service/data/EXR/D.USD.EUR.SP00.A?format=csvdatahttps://data-api.ecb.europa.eu/service/data/EXR/D.USD.EUR.SP00.A?format=csvdata",
+      "kind": "Web",
+      "connectionId": "{\"ClusterId\":\"fbce11b3-4891-4a51-80f4-c260ade1b3a8\",\"DatasourceId\":\"337160b3-0f56-471c-97df-fa2e7774b337\"}"
+    },
+    {
+      "path": "Lakehouse",
+      "kind": "Lakehouse",
+      "connectionId": "{\"ClusterId\":\"fbce11b3-4891-4a51-80f4-c260ade1b3a8\",\"DatasourceId\":\"246c89f4-934a-4d57-900e-660e1b8835de\"}"
+    }
+  ]
+}

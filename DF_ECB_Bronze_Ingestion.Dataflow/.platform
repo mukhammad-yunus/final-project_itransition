@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Dataflow",
+    "displayName": "DF_ECB_Bronze_Ingestion"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "3a20dc71-22cc-b106-49da-93d71375a6d8"
+  }
+}
