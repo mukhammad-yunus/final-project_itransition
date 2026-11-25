@@ -6,6 +6,29 @@
   "name": "DF_OpenAQ_Ingestion",
   "queryGroups": [],
   "documentLocale": "en-US",
-  "queriesMetadata": {},
-  "connections": []
+  "queriesMetadata": {
+    "Query1": {
+      "queryId": "e1b6ccbd-96de-4dce-82cf-ecc83a8f2ba3",
+      "queryName": "Query1",
+      "loadEnabled": false
+    },
+    "Query1_DataDestination": {
+      "queryId": "06ae1556-e960-4e6a-ac35-091f1b7fe9af",
+      "queryName": "Query1_DataDestination",
+      "isHidden": true,
+      "loadEnabled": false
+    }
+  },
+  "connections": [
+    {
+      "path": "Lakehouse",
+      "kind": "Lakehouse",
+      "connectionId": "{\"ClusterId\":\"fbce11b3-4891-4a51-80f4-c260ade1b3a8\",\"DatasourceId\":\"783f5d59-d9ed-451d-aaf8-e2ab152334b4\"}"
+    },
+    {
+      "path": "https://api.worldbank.org/",
+      "kind": "Web",
+      "connectionId": "{\"ClusterId\":\"fbce11b3-4891-4a51-80f4-c260ade1b3a8\",\"DatasourceId\":\"454502d0-5ab7-4907-a844-124af68176de\"}"
+    }
+  ]
 }
