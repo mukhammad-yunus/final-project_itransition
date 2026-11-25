@@ -1,0 +1,51 @@
+{
+  "formatVersion": "202502",
+  "computeEngineSettings": {
+    "allowModernEvaluationEngine": true
+  },
+  "name": "DF_OpenAQ_Bronze_Ingestion",
+  "queryGroups": [],
+  "documentLocale": "en-US",
+  "queriesMetadata": {
+    "ApiKey": {
+      "queryId": "26e74bf2-b477-466f-a438-f079fe8cf5fc",
+      "queryName": "ApiKey",
+      "loadEnabled": false
+    },
+    "Bronze_OpenAQ_Locations": {
+      "queryId": "8ee8f698-bf82-4d2f-a4ea-2e80ce7bc28a",
+      "queryName": "Bronze_OpenAQ_Locations",
+      "loadEnabled": false
+    },
+    "Bronze_OpenAQ_Locations_DataDestination": {
+      "queryId": "a0636808-0100-42e3-af60-ae4deeaa06b6",
+      "queryName": "Bronze_OpenAQ_Locations_DataDestination",
+      "isHidden": true,
+      "loadEnabled": false
+    },
+    "DefaultDestination": {
+      "queryId": "d0d2fa8d-fa61-4cb4-9fbb-8919339c01c5",
+      "queryName": "DefaultDestination",
+      "isHidden": true,
+      "loadEnabled": false
+    }
+  },
+  "connections": [
+    {
+      "path": "https://api.openaq.org/v3",
+      "kind": "Web",
+      "connectionId": "{\"ClusterId\":\"fbce11b3-4891-4a51-80f4-c260ade1b3a8\",\"DatasourceId\":\"31afcbc9-18f8-4574-9f3d-dc1be6429376\"}"
+    },
+    {
+      "path": "https://api.openaq.org/",
+      "kind": "Web",
+      "connectionId": "{\"ClusterId\":\"fbce11b3-4891-4a51-80f4-c260ade1b3a8\",\"DatasourceId\":\"c4e79cdf-b2b3-42fd-8c82-759cd5218ea5\"}"
+    },
+    {
+      "path": "Lakehouse",
+      "kind": "Lakehouse",
+      "connectionId": "{\"ClusterId\":\"fbce11b3-4891-4a51-80f4-c260ade1b3a8\",\"DatasourceId\":\"d2f289b3-8237-4ef7-a196-8c6d2661cad5\"}"
+    }
+  ],
+  "parametric": true
+}
