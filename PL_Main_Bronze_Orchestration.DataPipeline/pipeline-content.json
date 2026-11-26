@@ -1,0 +1,203 @@
+{
+  "properties": {
+    "activities": [
+      {
+        "type": "IfCondition",
+        "typeProperties": {
+          "expression": {
+            "value": "@and(equals(length(trim(string(pipeline().parameters.pMonth))), 2), contains(createArray('01','02','03','04','05','06','07','08','09','10','11','12'), trim(string(pipeline().parameters.pMonth))))",
+            "type": "Expression"
+          },
+          "ifTrueActivities": [],
+          "ifFalseActivities": [
+            {
+              "type": "Fail",
+              "typeProperties": {
+                "message": {
+                  "value": "@concat('Invalid month. Enter a two-digit month from 01 to 12 in the MM format. You entered ', pipeline().parameters.pMonth)",
+                  "type": "Expression"
+                },
+                "errorCode": "INVALID_MONTH"
+              },
+              "name": "FAIL_Invalid_Month",
+              "dependsOn": []
+            }
+          ]
+        },
+        "name": "IF_Validate_Month",
+        "dependsOn": []
+      },
+      {
+        "type": "IfCondition",
+        "typeProperties": {
+          "expression": {
+            "value": "@and(\n  equals(length(trim(string(pipeline().parameters.pYear))), 4),\n  and(\n    greaterOrEquals(int(trim(string(pipeline().parameters.pYear))), 1000),\n    lessOrEquals(int(trim(string(pipeline().parameters.pYear))), 9999)\n  )\n)\n",
+            "type": "Expression"
+          },
+          "ifTrueActivities": [],
+          "ifFalseActivities": [
+            {
+              "type": "Fail",
+              "typeProperties": {
+                "message": {
+                  "value": "@concat('Invalid YEAR. Enter a four-digit YEAR from in the YYYY format. You entered ', pipeline().parameters.pYear)",
+                  "type": "Expression"
+                },
+                "errorCode": "INVALID_YEAR"
+              },
+              "name": "FAIL_Invalid_Year",
+              "dependsOn": []
+            }
+          ]
+        },
+        "name": "IF_Validate_Year",
+        "dependsOn": [
+          {
+            "activity": "IF_Validate_Month",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "InvokePipeline",
+        "typeProperties": {
+          "parameters": {
+            "pMonth": {
+              "value": "@pipeline().parameters.pMonth",
+              "type": "Expression"
+            },
+            "pYear": {
+              "value": "@pipeline().parameters.pYear",
+              "type": "Expression"
+            }
+          },
+          "waitOnCompletion": true,
+          "workspaceId": "00000000-0000-0000-0000-000000000000",
+          "pipelineId": "49a3292b-2545-9b18-49bb-12cfddda92e8",
+          "operationType": "InvokeFabricPipeline"
+        },
+        "externalReferences": {
+          "connection": "96201549-7c96-49d1-8c30-6f4470e8779e"
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "RUN_Taxi_Bronze",
+        "dependsOn": [
+          {
+            "activity": "IF_Validate_Year",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "InvokePipeline",
+        "typeProperties": {
+          "parameters": {
+            "pMonth": {
+              "value": "@pipeline().parameters.pMonth",
+              "type": "Expression"
+            },
+            "pYear": {
+              "value": "@pipeline().parameters.pYear",
+              "type": "Expression"
+            }
+          },
+          "waitOnCompletion": true,
+          "workspaceId": "00000000-0000-0000-0000-000000000000",
+          "pipelineId": "d4d086a5-7af4-8b2c-48fc-dd21c60a5861",
+          "operationType": "InvokeFabricPipeline"
+        },
+        "externalReferences": {
+          "connection": "96201549-7c96-49d1-8c30-6f4470e8779e"
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "RUN_OpenAQ_Bronze",
+        "dependsOn": [
+          {
+            "activity": "IF_Validate_Year",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "RefreshDataflow",
+        "typeProperties": {
+          "dataflowId": "37ed5098-5cbd-afdd-45c8-89341460afab",
+          "workspaceId": "00000000-0000-0000-0000-000000000000",
+          "notifyOption": "NoNotification",
+          "dataflowType": "DataflowFabric",
+          "executeMashupQueriesOnly": true
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "RUN_WorldBank_Bronze",
+        "dependsOn": [
+          {
+            "activity": "IF_Validate_Year",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "RefreshDataflow",
+        "typeProperties": {
+          "dataflowId": "3a20dc71-22cc-b106-49da-93d71375a6d8",
+          "workspaceId": "00000000-0000-0000-0000-000000000000",
+          "notifyOption": "NoNotification",
+          "dataflowType": "DataflowFabric",
+          "executeMashupQueriesOnly": true
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "RUN_ECB_Bronze",
+        "dependsOn": [
+          {
+            "activity": "IF_Validate_Year",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      }
+    ],
+    "parameters": {
+      "pYear": {
+        "type": "string",
+        "defaultValue": "2026"
+      },
+      "pMonth": {
+        "type": "string",
+        "defaultValue": "06"
+      }
+    }
+  }
+}
