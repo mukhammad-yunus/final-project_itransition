@@ -13,7 +13,21 @@ shared ApiKey = "PLACEHOLDER_API_KEY" meta [IsParameterQuery = true, IsParameter
 shared Bronze_OpenAQ_Locations = let
     NYC_BBox = "-74.2591,40.4774,-73.7004,40.9176",
     PageSize = 1000,
-    IsPlaceholder = Text.StartsWith(Text.Upper(Text.Trim(ApiKey)), "PLACEHOLDER"),
+    CleanApiKey = Text.Trim(Text.From(ApiKey ?? ""), {" ", """"}),
+    IsPlaceholder = Text.StartsWith(Text.Upper(CleanApiKey), "PLACEHOLDER"),
+
+    EmptySchemaTable = #table(
+        type table [
+            id = Int64.Type,
+            name = text,
+            locality = text,
+            timezone = text,
+            isMobile = logical,
+            isMonitor = logical,
+            sensors = text
+        ],
+        {}
+    ),
 
     GetPage = (PageNumber as number) as list =>
         let
@@ -28,8 +42,9 @@ shared Bronze_OpenAQ_Locations = let
                             page = Text.From(PageNumber)
                         ],
                         Headers = [
-                            #"X-API-Key" = ApiKey
-                        ]
+                            #"X-API-Key" = CleanApiKey
+                        ],
+                        Timeout = #duration(0, 0, 0, 60)
                     ]
                 )
             ),
@@ -39,17 +54,7 @@ shared Bronze_OpenAQ_Locations = let
 
     FinalTable =
         if IsPlaceholder then
-            #table(
-                type table [
-                    id = Int64.Type,
-                    name = text,
-                    locality = text,
-                    timezone = text,
-                    isMobile = logical,
-                    isMonitor = logical
-                ],
-                {}
-            )
+            EmptySchemaTable
         else
             let
                 Pages = List.Generate(
@@ -62,47 +67,56 @@ shared Bronze_OpenAQ_Locations = let
                     each [Data]
                 ),
                 AllLocations = List.Combine(Pages),
-                RawTable = Table.FromRecords(AllLocations),
-                ColumnNames = Table.ColumnNames(RawTable),
-                NestedColumns = List.Select(
-                    ColumnNames,
-                    (ColumnName) =>
-                        List.AnyTrue(
-                            List.Transform(
-                                Table.Column(RawTable, ColumnName),
-                                each Value.Is(_, type record) or Value.Is(_, type list)
+                Result =
+                    if List.IsEmpty(AllLocations) then
+                        EmptySchemaTable
+                    else
+                        let
+                            RawTable = Table.FromRecords(
+                                AllLocations,
+                                {
+                                    "id",
+                                    "name",
+                                    "locality",
+                                    "timezone",
+                                    "isMobile",
+                                    "isMonitor",
+                                    "sensors"
+                                },
+                                MissingField.UseNull
+                            ),
+                            ConvertSensors = Table.TransformColumns(
+                                RawTable,
+                                {
+                                    {
+                                        "sensors",
+                                        (Value) =>
+                                            if Value = null then
+                                                null
+                                            else if Value is text then
+                                                Value
+                                            else
+                                                Text.FromBinary(Json.FromValue(Value)),
+                                        type text
+                                    }
+                                }
+                            ),
+                            TypedTable = Table.TransformColumnTypes(
+                                ConvertSensors,
+                                {
+                                    {"id", Int64.Type},
+                                    {"name", type text},
+                                    {"locality", type text},
+                                    {"timezone", type text},
+                                    {"isMobile", type logical},
+                                    {"isMonitor", type logical},
+                                    {"sensors", type text}
+                                }
                             )
-                        )
-                ),
-                ConvertNested = Table.TransformColumns(
-                    RawTable,
-                    List.Transform(
-                        NestedColumns,
-                        (ColumnName) =>
-                            {
-                                ColumnName,
-                                (Value) =>
-                                    if Value = null then
-                                        null
-                                    else
-                                        Text.FromBinary(Json.FromValue(Value)),
-                                type text
-                            }
-                    )
-                ),
-                TypedTable = Table.TransformColumnTypes(
-                    ConvertNested,
-                    {
-                        {"id", Int64.Type},
-                        {"name", type text},
-                        {"locality", type text},
-                        {"timezone", type text},
-                        {"isMobile", type logical},
-                        {"isMonitor", type logical}
-                    }
-                )
+                        in
+                            TypedTable
             in
-                TypedTable
+                Result
 in
     FinalTable;
 shared Bronze_OpenAQ_Locations_DataDestination = let
