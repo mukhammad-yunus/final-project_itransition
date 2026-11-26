@@ -18,11 +18,14 @@
               "typeProperties": {
                 "location": {
                   "type": "HttpServerLocation",
-                  "relativeUrl": "trip-data/yellow_tripdata_2026-08.parquet"
+                  "relativeUrl": {
+                    "value": "@concat('trip-data/yellow_tripdata_', pipeline().parameters.pYear,'-', pipeline().parameters.pMonth, '.parquet')",
+                    "type": "Expression"
+                  }
                 }
               },
               "externalReferences": {
-                "connection": "e5c081e5-1ce4-4487-9786-832854f4a63f"
+                "connection": "70ee65f0-a21f-41a6-9579-5dc87b8a8e72"
               },
               "annotations": []
             }
@@ -30,7 +33,7 @@
           "sink": {
             "type": "BinarySink",
             "storeSettings": {
-              "type": "LakehouseWriteSettings"
+              "type": "AzureBlobStorageWriteSettings"
             },
             "datasetSettings": {
               "type": "Binary",
@@ -38,7 +41,10 @@
                 "location": {
                   "type": "LakehouseLocation",
                   "folderPath": "Bronze/NYC_Taxi",
-                  "fileName": "yellow_tripdata_2026-08.parquet"
+                  "fileName": {
+                    "value": "@concat('yellow_tripdata_', pipeline().parameters.pYear,'-', pipeline().parameters.pMonth, '.parquet')",
+                    "type": "Expression"
+                  }
                 }
               },
               "linkedService": {
@@ -103,7 +109,7 @@
             "annotations": []
           },
           "storeSettings": {
-            "type": "LakehouseReadSettings",
+            "type": "AzureBlobStorageReadSettings",
             "recursive": false,
             "wildcardFileName": "*.parquet",
             "enablePartitionDiscovery": false
@@ -120,6 +126,16 @@
         "description": "This activity cleans all the instances of .parquet file",
         "dependsOn": []
       }
-    ]
+    ],
+    "parameters": {
+      "pMonth": {
+        "type": "string",
+        "defaultValue": "PLACEHOLDER_MONTH"
+      },
+      "pYear": {
+        "type": "string",
+        "defaultValue": "PLACEHOLDER_YEAR"
+      }
+    }
   }
 }
