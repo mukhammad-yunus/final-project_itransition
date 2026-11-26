@@ -7,14 +7,14 @@
   "queryGroups": [],
   "documentLocale": "en-US",
   "queriesMetadata": {
-    "Query1": {
+    "Retrieve_WorldBank_data": {
       "queryId": "e1b6ccbd-96de-4dce-82cf-ecc83a8f2ba3",
-      "queryName": "Query1",
+      "queryName": "Retrieve_WorldBank_data",
       "loadEnabled": false
     },
-    "Query1_DataDestination": {
-      "queryId": "06ae1556-e960-4e6a-ac35-091f1b7fe9af",
-      "queryName": "Query1_DataDestination",
+    "Retrieve_WorldBank_data_DataDestination": {
+      "queryId": "5f70043c-7b29-48b9-ae85-c7921283e5b0",
+      "queryName": "Retrieve_WorldBank_data_DataDestination",
       "isHidden": true,
       "loadEnabled": false
     }
