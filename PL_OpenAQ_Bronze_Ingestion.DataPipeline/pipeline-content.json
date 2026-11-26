@@ -20,7 +20,14 @@
         },
         "name": "Get_OpenAQ_Secret",
         "description": "Retrieve the OpenAQ API secret from Azure Key Vault using the workspace identity.",
-        "dependsOn": []
+        "dependsOn": [
+          {
+            "activity": "SET_Date_To",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
       },
       {
         "type": "RefreshDataflow",
@@ -71,6 +78,20 @@
                 "type": "Expression"
               },
               "type": "String"
+            },
+            "DateFrom": {
+              "value": {
+                "value": "@variables('vDateFrom')",
+                "type": "Expression"
+              },
+              "type": "String"
+            },
+            "DateTo": {
+              "value": {
+                "value": "@variables('vDateTo')",
+                "type": "Expression"
+              },
+              "type": "String"
             }
           },
           "executeMashupQueriesOnly": true
@@ -91,7 +112,66 @@
             ]
           }
         ]
+      },
+      {
+        "type": "SetVariable",
+        "typeProperties": {
+          "variableName": "vDateFrom",
+          "value": {
+            "value": "@concat(pipeline().parameters.pYear,'-',pipeline().parameters.pMonth,'-01T00:00:00Z')",
+            "type": "Expression"
+          }
+        },
+        "policy": {
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "SET_Date_From",
+        "dependsOn": []
+      },
+      {
+        "type": "SetVariable",
+        "typeProperties": {
+          "variableName": "vDateTo",
+          "value": {
+            "value": "@if(equals(int(pipeline().parameters.pMonth), 12), concat(string(add(int(pipeline().parameters.pYear), 1)), '-01-01T00:00:00Z'), concat(string(pipeline().parameters.pYear), '-', if(less(add(int(pipeline().parameters.pMonth), 1), 10), concat('0', string(add(int(pipeline().parameters.pMonth), 1))), string(add(int(pipeline().parameters.pMonth), 1))), '-01T00:00:00Z'))\n",
+            "type": "Expression"
+          }
+        },
+        "policy": {
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "SET_Date_To",
+        "dependsOn": [
+          {
+            "activity": "SET_Date_From",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
       }
-    ]
+    ],
+    "parameters": {
+      "pMonth": {
+        "type": "string",
+        "defaultValue": "PLACEHOLDER_MONTH"
+      },
+      "pYear": {
+        "type": "string",
+        "defaultValue": "PLACEHOLDER_YEAR"
+      }
+    },
+    "variables": {
+      "vDateFrom": {
+        "type": "String",
+        "defaultValue": "PLACEHOLDER"
+      },
+      "vDateTo": {
+        "type": "String",
+        "defaultValue": "PLACEHOLDER"
+      }
+    }
   }
 }
