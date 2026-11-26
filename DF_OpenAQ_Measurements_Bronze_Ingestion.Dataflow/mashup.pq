@@ -1,6 +1,8 @@
 [StagingDefinition = [Kind = "FastCopy"]]
 section Section1;
-shared ApiKey = "PLACEHOLDER_API_KEY" meta [IsParameterQuery = true, IsParameterQueryRequired = false, Type = type text];
+shared ApiKey = "PLACEHOLDER_API_KEY" meta [IsParameterQuery = true, IsParameterQueryRequired = false, Type = type text, DefaultValue = ""];
+shared DateFrom = "PLACEHOLDER_DATEFROM" meta [IsParameterQuery = true, IsParameterQueryRequired = false, Type = type text, DefaultValue = ""];
+shared DateTo = "PLACEHOLDER_DATETO" meta [IsParameterQuery = true, IsParameterQueryRequired = false, Type = type text, DefaultValue = ""];
 shared Locations_Source = let
   Source = Lakehouse.Contents(null),
   Navigation = Source{[workspaceId = "794573d9-d83f-4efd-88de-1cd9be7176c5"]}[Data],
@@ -10,31 +12,42 @@ in
   #"Navigation 2";
 [DataDestinations = {[Definition = [Kind = "Reference", QueryName = "Bronze_OpenAQ_Measurements_DataDestination", IsNewTarget = true], Settings = [Kind = "Automatic", TypeSettings = [Kind = "Table"]]]}]
 shared Bronze_OpenAQ_Measurements = let
-    DateFrom = "2026-06-01T00:00:00Z",
-    DateTo   = "2026-07-01T00:00:00Z",
     PageSize = 1000,
     TargetPollutants = {"pm25", "no2", "o3"},
-    IsPlaceholder = Text.StartsWith(Text.Upper(Text.Trim(ApiKey)), "PLACEHOLDER"),
+
+    CleanApiKey = Text.Trim(Text.From(ApiKey ?? ""), {" ", """"}),
+    CleanDateFrom = Text.Trim(Text.From(DateFrom ?? ""), {" ", """"}),
+    CleanDateTo = Text.Trim(Text.From(DateTo ?? ""), {" ", """"}),
+
+    IsInvalidOrPlaceholder =
+        CleanApiKey = "" or
+        CleanDateFrom = "" or
+        CleanDateTo = "" or
+        Text.StartsWith(Text.Upper(CleanApiKey), "PLACEHOLDER") or
+        Text.StartsWith(Text.Upper(CleanDateFrom), "PLACEHOLDER") or
+        Text.StartsWith(Text.Upper(CleanDateTo), "PLACEHOLDER"),
+
+    EmptyOutputTable = #table(
+        type table [
+            sensor_id = text,
+            location_id = Int64.Type,
+            location_name = text,
+            locality = text,
+            timezone = text,
+            parameter = text,
+            parameter_units = text,
+            value = number,
+            datetime_utc = text,
+            datetime_local = text,
+            datetime_to_utc = text,
+            coverage_percent = number
+        ],
+        {}
+    ),
 
     FinalTable =
-        if IsPlaceholder then
-            #table(
-                type table [
-                    sensor_id = text,
-                    location_id = Int64.Type,
-                    location_name = text,
-                    locality = text,
-                    timezone = text,
-                    parameter = text,
-                    parameter_units = text,
-                    value = number,
-                    datetime_utc = text,
-                    datetime_local = text,
-                    datetime_to_utc = text,
-                    coverage_percent = number
-                ],
-                {}
-            )
+        if IsInvalidOrPlaceholder then
+            EmptyOutputTable
         else
             let
                 Locations = Locations_Source,
@@ -141,14 +154,14 @@ shared Bronze_OpenAQ_Measurements = let
                                             & "/hours",
 
                                         Query = [
-                                            datetime_from = DateFrom,
-                                            datetime_to = DateTo,
+                                            datetime_from = CleanDateFrom,
+                                            datetime_to = CleanDateTo,
                                             limit = Text.From(PageSize),
                                             page = "1"
                                         ],
 
                                         Headers = [
-                                            #"X-API-Key" = ApiKey
+                                            #"X-API-Key" = CleanApiKey
                                         ],
 
                                         Timeout = #duration(0, 0, 0, 60)

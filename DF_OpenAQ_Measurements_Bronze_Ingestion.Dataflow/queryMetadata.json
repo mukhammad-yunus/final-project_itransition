@@ -23,6 +23,16 @@
       "isHidden": true,
       "loadEnabled": false
     },
+    "DateFrom": {
+      "queryId": "836b5ccb-5877-488f-8c6a-11aebcab8214",
+      "queryName": "DateFrom",
+      "loadEnabled": false
+    },
+    "DateTo": {
+      "queryId": "faeee3a4-db3e-45e2-86c8-478b8e614d5f",
+      "queryName": "DateTo",
+      "loadEnabled": false
+    },
     "Locations_Source": {
       "queryId": "7a8b1342-175a-4478-a152-0a76ff4950bd",
       "queryName": "Locations_Source"
